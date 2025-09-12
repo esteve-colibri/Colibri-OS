@@ -27,7 +27,7 @@ function mapPropertyToNotionFormat(propName, propDef) {
     case "select":
       return { select: { options: options?.map((name) => ({ name })) || [] } };
     case "status":
-       // Status properties must have at least one option.
+      // Status properties must have at least one option.
       if (!options || options.length === 0) {
         console.warn(`⚠️  Property '${propName}' of type 'status' has no options. Skipping.`);
         return null;
@@ -93,6 +93,8 @@ async function setup() {
   const entities = Object.entries(spec.entities);
 
   // 3. First Pass: Create all databases without relations
+  // SAFETY: This script never deletes or overwrites existing Notion databases or pages.
+  // Only creation and property updates are allowed. No destructive actions are performed.
   console.log("\n PHASE 1: Creating databases...");
   for (const [entityName, entityDef] of entities) {
     console.log(`  - Creating database: ${entityName}...`);
@@ -112,6 +114,7 @@ async function setup() {
     }
 
     try {
+      // SAFETY: Do not delete or overwrite existing databases. Only create if not present.
       const response = await notion.databases.create({
         parent: { page_id: PARENT_PAGE_ID },
         title: [{ type: "text", text: { content: entityName } }],
@@ -147,9 +150,10 @@ async function setup() {
         relation: { database_id: targetDb.id },
       };
     }
-    
+
     if (Object.keys(relationProperties).length > 0) {
       try {
+        // SAFETY: Only update properties, never delete or overwrite data/content.
         await notion.databases.update({
           database_id: dbInfo.id,
           properties: relationProperties,
@@ -160,7 +164,7 @@ async function setup() {
       }
     }
   }
-  
+
   // 5. Save the database IDs to a file for the seed script
   try {
     const idsToSave = Object.fromEntries(

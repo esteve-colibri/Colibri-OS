@@ -1,0 +1,250 @@
+# Digital Office Structure: Markdown Summary
+
+This document summarizes the structure of your digital office as defined in `digital_office_schema_spec.yaml`. It includes all entities (databases), their properties, data types, descriptions, and sample data. Relationships and key views are also documented for clarity.
+
+---
+
+## Entities & Properties
+
+### AI_Systems
+*Descriptions and management of AI systems being developed or deployed.*
+
+| Property                     | Type         | Description                                               |
+|------------------------------|--------------|-----------------------------------------------------------|
+| Name                         | title        | The name of the AI system.                                |
+| Risk_Level                   | select       | Risk level classification under the EU AI Act.            |
+| AI_Capability                | rich_text    | Description of the AI system's capabilities.              |
+| Non_Goals                    | rich_text    | What the AI system is not intended to do.                 |
+| Decision_Rights              | rich_text    | Who has decision-making authority over the system.        |
+| Guardrails                   | rich_text    | Safety and ethical boundaries for the AI system.          |
+| Uncertainty_UX               | rich_text    | How uncertainty is communicated to users.                 |
+| Explainability               | rich_text    | How the system's decisions are explained.                 |
+| Fallbacks_Recovery           | rich_text    | Fallbacks and recovery mechanisms in case of failure.     |
+| Metrics                      | rich_text    | Key performance or risk metrics tracked.                  |
+| Logging_Review               | rich_text    | How logs are reviewed for compliance and safety.          |
+| Human_Oversight_Requirements | rich_text    | Requirements for human oversight.                         |
+| Technical_Documentation      | files        | Technical documentation files for the system.             |
+| Data_Governance_Plan         | files        | Files outlining data governance plans.                    |
+| Bias_Assessment_Mitigation   | rich_text    | Bias assessment and mitigation strategies.                |
+| Accuracy_Metrics             | number       | Accuracy metrics for the AI system.                       |
+| Cybersecurity_Measures       | rich_text    | Cybersecurity measures in place.                          |
+| Adversarial_Testing_Results  | files        | Results of adversarial testing.                           |
+| Post_Market_Monitoring_Plan  | files        | Plan for post-market monitoring.                          |
+| Generative_AI_Risks          | multi_select | Risks specific to generative AI.                          |
+| FRIA_Conducted               | checkbox     | Whether a Fundamental Rights Impact Assessment was conducted. |
+| Environmental_Impact_kWh     | number       | Estimated environmental impact in kWh.                    |
+| Specific_Human_Oversight_Protocols | files  | Files describing specific human oversight protocols.      |
+| Bounded_Autonomy_Framework   | files        | Framework files for bounded autonomy.                     |
+| Compliance_Roadmap           | files        | Compliance roadmap files.                                 |
+
+**Sample Data:**
+- Name: AI Chatbot, Risk_Level: Limited, AI_Capability: Conversational support for users.
+- Name: Document Summarizer, Risk_Level: Minimal, AI_Capability: Summarizes uploaded documents.
+
+---
+
+### Signals
+*Measurable inputs that contribute to the Culture Homeostasis Index (CHI).*
+
+| Property         | Type         | Description                                 |
+|------------------|--------------|---------------------------------------------|
+| Signal_Input     | title        | The name or label of the signal.            |
+| Data_Type        | select       | Type of data the signal represents.         |
+| Source_View      | select       | Whether the signal is internal or external. |
+| Weight_Score     | number       | Weight or importance score for the signal.  |
+| Impact_Level     | select       | Level of impact for the signal.             |
+| Confidence_Notes | rich_text    | Notes on confidence or reliability.         |
+| Domain_Anchor    | multi_select | Domains anchored by this signal.            |
+| Formula          | rich_text    | Formula or calculation for the signal.      |
+| Description      | rich_text    | Detailed description of the signal.         |
+
+**Sample Data:**
+- Signal_Input: Team Feedback, Data_Type: Say, Source_View: Internal, Weight_Score: 5, Impact_Level: Micro, Description: Feedback from team meetings.
+- Signal_Input: Customer Survey, Data_Type: Feel, Source_View: External, Weight_Score: 8, Impact_Level: Macro, Description: Results from customer satisfaction surveys.
+
+---
+
+### Rules_SRME
+*Proposed behavioral rules generated by the Semantic Rule Matching Engine (SRME).*
+
+| Property             | Type         | Description                                 |
+|----------------------|--------------|---------------------------------------------|
+| Trigger              | title        | Trigger event or condition for the rule.    |
+| Value                | relation     | The value rule this rule is based on.       |
+| Impact_Level         | select       | Level of impact for the rule.               |
+| Rule                 | rich_text    | The rule text or description.               |
+| NLP_derived_Keywords | multi_select | Keywords derived from NLP analysis.         |
+
+**Sample Data:**
+- Trigger: Missed Deadline, Value: Clarity and Transparency, Impact_Level: Micro, Rule: Notify the team and update the project plan.
+
+---
+
+### Micro_Habits
+*Small, repeatable actions suggested by the SRME.*
+
+| Property       | Type     | Description                                 |
+|----------------|----------|---------------------------------------------|
+| Micro_habit    | title    | The name of the micro-habit.                |
+| Related_Rule   | relation | The rule this micro-habit is related to.    |
+| Related_Value  | relation | The value this micro-habit is related to.   |
+
+**Sample Data:**
+- Micro_habit: Daily Standup, Related_Rule: Missed Deadline, Related_Value: Clarity and Transparency
+
+---
+
+### Open_Roles
+*Positions being recruited for.*
+
+| Property     | Type     | Description                                 |
+|--------------|----------|---------------------------------------------|
+| Role_Name    | title    | The name of the open role.                  |
+| Status       | status   | Current status of the open role.            |
+| Team         | select   | Team responsible for the open role.         |
+| Focus        | rich_text| Main focus or area for the role.            |
+| Key_Activities | rich_text| Key activities or responsibilities for the role. |
+
+**Sample Data:**
+- Role_Name: AI Researcher, Status: Open, Team: Research, Focus: Develop new AI models., Key_Activities: Research, prototyping, documentation.
+
+---
+
+### Candidates
+*Individuals applying for open roles.*
+
+| Property         | Type     | Description                                 |
+|------------------|----------|---------------------------------------------|
+| Full_Name        | title    | Full name of the candidate.                 |
+| Status           | status   | Current status in the recruiting pipeline.  |
+| Open_Role        | relation | The open role this candidate is applying for.|
+| Folk_Person_ID   | rich_text| ID from Folk CRM, if available.             |
+| Email            | email    | Candidate's email address.                  |
+| Phone            | phone    | Candidate's phone number.                   |
+| Company          | relation | Company associated with the candidate.      |
+| Notion_Record_ID | formula  | Unique Notion record ID.                    |
+
+**Sample Data:**
+- Full_Name: Jane Doe, Status: Applied, Open_Role: AI Researcher, Email: jane.doe@email.com, Phone: +1234567890
+
+---
+
+### Companies
+*Organizations related to contacts.*
+
+| Property         | Type     | Description                                 |
+|------------------|----------|---------------------------------------------|
+| Name             | title    | Name of the company.                        |
+| Folk_Company_ID  | rich_text| ID from Folk CRM, if available.             |
+
+**Sample Data:**
+- Name: OpenAI, Folk_Company_ID: FOLK1234
+
+---
+
+### Contacts
+*Individuals in the CRM, for recruiting and outreach.*
+
+| Property         | Type     | Description                                 |
+|------------------|----------|---------------------------------------------|
+| Name             | title    | Name of the contact.                        |
+
+**Sample Data:**
+- Name: John Smith
+
+---
+
+### Onboarding_ToDos
+*Goals and tasks for new team members.*
+
+| Property         | Type     | Description                                 |
+|------------------|----------|---------------------------------------------|
+| Goal_Task_Name   | title    | Name of the onboarding goal or task.        |
+| Assigned_Person  | people   | Person assigned to the task.                |
+| Status           | status   | Current status of the onboarding task.      |
+| Description      | rich_text| Detailed description of the task.           |
+
+**Sample Data:**
+- Goal_Task_Name: Complete Security Training, Assigned_Person: Jane Doe, Status: Not Started, Description: Mandatory security training for all new hires.
+
+---
+
+### Knowledge_Items
+*New information, ideas, links, or files captured for the "Knowledge Garden".*
+
+| Property         | Type         | Description                                 |
+|------------------|--------------|---------------------------------------------|
+| Name             | title        | Name or title of the knowledge item.        |
+| Type             | select       | Type of knowledge item.                     |
+| Tags             | multi_select | Tags for categorizing the knowledge item.   |
+| URL              | url          | URL associated with the knowledge item.     |
+| File             | files        | File(s) attached to the knowledge item.     |
+| Summary_Notes    | rich_text    | Summary or notes about the knowledge item.  |
+
+**Sample Data:**
+- Name: AI Ethics Paper, Type: Insight, Tags: [Insight, DataPoint], URL: https://arxiv.org/abs/1234.5678, Summary_Notes: Key takeaways from the latest research.
+
+---
+
+### Tech_Stack
+*The collection of software and platforms used by the organization.*
+
+| Property               | Type     | Description                                 |
+|------------------------|----------|---------------------------------------------|
+| Tool_Name              | title    | Name of the tool or software.               |
+| Strategic_Purpose      | rich_text| Strategic purpose of the tool.              |
+| Plan_Edition           | select   | Plan or edition of the tool.                |
+| Seats_Licenses         | number   | Number of seats or licenses.                |
+| Billing_Cycle          | select   | Billing cycle for the tool.                 |
+| Cost_per_Unit_Month    | number   | Monthly cost per unit in euros.             |
+| First_Year_Annual_Cost | number   | First year annual cost in euros.            |
+| Status                 | select   | Current status of the tool.                 |
+| Tool_Category          | select   | Category of the tool.                       |
+
+**Sample Data:**
+- Tool_Name: Notion, Strategic_Purpose: Knowledge management and collaboration., Plan_Edition: Team, Seats_Licenses: 10, Billing_Cycle: Annual, Cost_per_Unit_Month: 8, First_Year_Annual_Cost: 96, Status: Up & Running, Tool_Category: Knowledge Management
+
+---
+
+### Benchmarks
+*Organizations identified for competitive analysis or as sources of inspiration.*
+
+| Property               | Type     | Description                                 |
+|------------------------|----------|---------------------------------------------|
+| Company_Service_Name   | title    | Name of the company or service.             |
+| Website_URL            | url      | Website URL of the company or service.      |
+| Logo_URL               | url      | URL to the logo image.                      |
+| Category               | select   | Category of the benchmark.                  |
+| Sub_Category           | select   | Sub-category for more detailed classification.|
+| Rationale_for_Inclusion| rich_text| Reason for including this benchmark.        |
+
+**Sample Data:**
+- Company_Service_Name: Airtable, Website_URL: https://airtable.com, Logo_URL: https://logo.clearbit.com/airtable.com, Category: Inspirational Benchmark, Sub_Category: Knowledge Management, Rationale_for_Inclusion: Flexible database platform for teams.
+
+---
+
+## Relationships
+
+- Workstreams ↔ Value_Rules: Shows which value rules guide the work. (many-to-many)
+- AI_Systems ↔ Value_Rules: Ensures AI compliance with ethical principles. (many-to-many)
+- Signals ↔ Value_Rules: Signals measure the manifestation of value rules. (many-to-many)
+- Rules_SRME → Value_Rules: SRME rules are generated based on a selected value. (many-to-one)
+- Rules_SRME → Micro_Habits: One rule can suggest multiple micro-habits. (one-to-many)
+- Open_Roles → Candidates: Links candidates to the roles they apply for. (one-to-many)
+- Contacts → Companies: Links contacts to their associated company. (many-to-one)
+- Knowledge_Items ↔ Teams: Tags relevant teams for a knowledge item (via a 'Team' select/multi-select property).
+
+## Key Views
+
+- **Project Tracking Boards** (Workstreams): Kanban, Calendar, List, Gantt views to track workstreams and tasks by status, timeline, etc.
+- **Recruiting Pipeline** (Candidates): Kanban grouped by Open_Role, tracks candidates through the hiring process.
+- **My Onboarding Tasks** (Onboarding_ToDos): List filtered for "Assigned_Person contains Me".
+- **Knowledge Ingestion Workflow** (Knowledge_Items): Form and Table views to capture new information, links, and files.
+- **AI System Risk Dashboard** (AI_Systems): Gallery grouped by Risk_Level, inventory of all AI systems by risk.
+- **Culture Homeostasis Index (CHI) Dashboards** (Signals): Dashboards for different roles to monitor cultural health via Z-score alerts and heatmaps.
+- **Tech Stack Inventory** (Tech_Stack): Table view of all software, tracking costs, purpose, and status.
+- **Competitor/Benchmark Analysis** (Benchmarks): Gallery grouped by Category, overview of the competitive and inspirational landscape.
+
+---
+
+*This summary is auto-generated from your canonical YAML schema. For updates, edit `digital_office_schema_spec.yaml` and re-run the documentation script.*
