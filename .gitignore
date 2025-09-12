@@ -1,2 +1,30 @@
+# Environment variables
 .env
-.env
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# VS Code user-specific settings (keep workspace settings)
+.vscode/settings.local.json
+.vscode/*.code-workspace
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Notion generated files
+notion-ids.json
+
+# Temporary files
+*.tmp
+*.temp
+.temp/
+.tmp/

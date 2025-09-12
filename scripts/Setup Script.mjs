@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import yaml from "js-yaml";
-import notion from "../src/lib/notion.mjs";
+import notion from "./notionClient.mjs";
 
 const { PARENT_PAGE_ID } = process.env;
 const SPEC_FILE_PATH = path.join(process.cwd(), "digital_office_schema_spec.yaml");

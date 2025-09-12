@@ -5,8 +5,8 @@
   "main": "scripts/setup.mjs",
   "type": "module",
   "scripts": {
-    "setup": "node scripts/setup.mjs",
-    "seed": "node scripts/seed.mjs",
+    "setup": "node \"scripts/Setup Script.mjs\"",
+    "seed": "node \"scripts/Seed Script.mjs\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

@@ -17,6 +17,9 @@ Before you begin, ensure you have the following:
 - **Notion Account:** A Notion account with a workspace you can add integrations to.
 - **A Parent Page:** An empty page in your Notion workspace where the new databases will be created.
 
+## Development Setup
+For detailed instructions on setting up your local development environment with Visual Studio Code and GitHub synchronization, see our comprehensive [Visual Studio Code Setup Guide](VS_CODE_SETUP.md).
+
 ## 🚀 Quick Start Guide
 
 ### Step 1: Clone the Repository

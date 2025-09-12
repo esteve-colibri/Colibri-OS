@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import notion from "../src/lib/notion.mjs";
+import notion from "./notionClient.mjs";
 
 const DB_IDS_FILE_PATH = path.join(process.cwd(), "notion-ids.json");
 
