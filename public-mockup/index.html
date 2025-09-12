@@ -9,9 +9,564 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- ...rest of your HTML code... -->
+    
+    <!-- Chosen Palette: Stone & Teal -->
+    <!-- Application Structure Plan: The SPA is designed as an interactive dashboard with a persistent sidebar navigation for high-level context switching. This structure was chosen over a linear document format to reflect the interconnected, non-linear nature of the system architecture described in the source material. It allows users (stakeholders, developers) to explore at their own pace, either getting a high-level overview (Dashboard, Visualizer), diving into specifics (Entity Explorer), or focusing on key areas like the Tech Stack or AI Governance. This task-oriented approach—understanding components, seeing relationships, analyzing costs—is more intuitive for exploring a complex system blueprint. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Tech Stack Costs by Category -> Goal: Compare -> Viz: Bar Chart (Chart.js) -> Interaction: Tooltips on hover showing cost. -> Justification: Provides an immediate visual summary of where budget is allocated, which is more effective than a simple table for high-level analysis.
+        - Report Info: Entity Relationships -> Goal: Organize/Relationships -> Viz: HTML/CSS Node-Link Diagram -> Interaction: Click on a node to highlight its connections and scroll to its details in the explorer. -> Justification: Offers a "map" of the system, making the complex interdependencies described in the spec easy to grasp at a glance.
+        - Report Info: Entity Schemas (Properties) -> Goal: Inform/Organize -> Viz: Dynamic HTML Table -> Interaction: User selects an entity from a dropdown, and the table updates with its specific properties. -> Justification: This is the core interactive element, allowing users to perform a detailed "inspection" of each system component in a structured, easy-to-read format.
+        - Report Info: AI System Risk Levels -> Goal: Inform/Compare -> Viz: Gallery of styled cards -> Interaction: Visual grouping and color-coding by risk. -> Justification: Translates the abstract risk levels from the spec into a scannable, visually prioritized dashboard.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f5f4; /* stone-100 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-link.active {
+            background-color: #14b8a6; /* teal-500 */
+            color: #ffffff;
+            font-weight: 600;
+        }
+        .nav-link:not(.active):hover {
+            background-color: #f0fdfa; /* teal-50 */
+            color: #0f766e; /* teal-700 */
+        }
+        .property-table-row:hover {
+            background-color: #fafaf9; /* stone-50 */
+        }
+        .node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .node:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+            z-index: 10;
+        }
+        .node.highlighted {
+            border-color: #14b8a6; /* teal-500 */
+            background-color: #ccfbf1; /* teal-100 */
+        }
+        .line {
+            position: absolute;
+            background-color: #a8a29e; /* stone-400 */
+            height: 2px;
+            transform-origin: 0 0;
+            z-index: -1;
+            transition: background-color 0.3s ease;
+        }
+        .line.highlighted {
+            background-color: #14b8a6; /* teal-500 */
+            height: 3px;
+        }
+    </style>
 </head>
 <body class="text-stone-800">
-<!-- ...rest of your HTML code... -->
+
+    <div class="flex min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white shadow-md hidden md:flex flex-col fixed h-full">
+            <div class="p-6 border-b border-stone-200">
+                <h1 class="text-xl font-bold text-stone-900">Blueprint Explorer</h1>
+                <p class="text-sm text-stone-500">Colibri-OS Digital Office</p>
+            </div>
+            <nav id="desktop-nav" class="flex-1 p-4 space-y-2">
+                <a href="#overview" class="nav-link flex items-center p-3 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                    Overview
+                </a>
+                <a href="#entity-explorer" class="nav-link flex items-center p-3 rounded-lg">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v5a2 2 0 01-2 2H4a2 2 0 01-2-2v-5z" /></svg>
+                    Entity Explorer
+                </a>
+                <a href="#relationship-visualizer" class="nav-link flex items-center p-3 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12s-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" /></svg>
+                    Relationship Visualizer
+                </a>
+                <a href="#tech-stack" class="nav-link flex items-center p-3 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg>
+                    Tech Stack
+                </a>
+                <a href="#ai-governance" class="nav-link flex items-center p-3 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                    AI Governance
+                </a>
+                <a href="#open-questions" class="nav-link flex items-center p-3 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    Open Questions
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 md:ml-64">
+             <!-- Mobile Header -->
+            <header class="md:hidden bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-40">
+                <h1 class="text-xl font-bold text-stone-900">Blueprint Explorer</h1>
+                <button id="mobile-menu-button" class="p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                </button>
+            </header>
+            <div id="mobile-nav" class="hidden md:hidden bg-white p-4 border-b">
+                <!-- Mobile nav links are injected here by JS -->
+            </div>
+
+            <div class="p-6 lg:p-10 space-y-12">
+                
+                <!-- Section: Overview -->
+                <section id="overview" class="scroll-mt-20">
+                    <h2 class="text-3xl font-bold text-stone-900 mb-2">Digital Office Overview</h2>
+                    <p class="text-lg text-stone-600 mb-8 max-w-4xl">This application provides an interactive exploration of the Colibri-OS Digital Office architecture. It translates the formal specification into a dynamic blueprint, allowing you to examine the core components, their relationships, and the guiding principles of the system.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+                            <h3 class="font-bold text-teal-600 text-lg mb-2">Core Purpose</h3>
+                            <p class="text-stone-600">To create a central nervous system for the organization that is an active, intelligent environment to support work, reinforce culture, and streamline operations.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+                            <h3 class="font-bold text-teal-600 text-lg mb-2">Key Principle: Clarity</h3>
+                            <p class="text-stone-600">Using structured data and clear processes (like RACI) to ensure everyone knows what they are responsible for and to foster transparency.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+                            <h3 class="font-bold text-teal-600 text-lg mb-2">Key Principle: Governance</h3>
+                            <p class="text-stone-600">Implementing a rigorous framework for developing and deploying AI systems that is compliant with regulations and guided by ethical principles.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Entity Explorer -->
+                <section id="entity-explorer" class="scroll-mt-20">
+                    <h2 class="text-3xl font-bold text-stone-900 mb-2">Entity Explorer</h2>
+                    <p class="text-lg text-stone-600 mb-6 max-w-4xl">The Digital Office is built upon a collection of interconnected Notion databases, referred to as "Entities". Select an entity from the dropdown to inspect its purpose and detailed property schema.</p>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+                            <label for="entity-select" class="font-semibold text-stone-700 mb-2 sm:mb-0">Select an Entity:</label>
+                            <select id="entity-select" class="w-full sm:w-auto p-2 border border-stone-300 rounded-md shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
+                                <!-- Options populated by JS -->
+                            </select>
+                        </div>
+
+                        <div id="entity-details">
+                            <!-- Details populated by JS -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Relationship Visualizer -->
+                <section id="relationship-visualizer" class="scroll-mt-20">
+                    <h2 class="text-3xl font-bold text-stone-900 mb-2">Relationship Visualizer</h2>
+                    <p class="text-lg text-stone-600 mb-8 max-w-4xl">This diagram illustrates how the core entities of the Digital Office are interconnected. Click on an entity node to highlight its relationships and see its details in the explorer above. This map helps visualize the flow of information and dependencies within the system.</p>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200 relative min-h-[600px]" id="visualizer-container">
+                        <!-- Nodes and lines populated by JS -->
+                    </div>
+                </section>
+                
+                <!-- Section: Tech Stack -->
+                <section id="tech-stack" class="scroll-mt-20">
+                    <h2 class="text-3xl font-bold text-stone-900 mb-2">Tech Stack Analysis</h2>
+                    <p class="text-lg text-stone-600 mb-8 max-w-4xl">The system relies on a curated collection of software and platforms. The chart below breaks down the estimated first-year annual cost by category, providing a clear overview of the technology investment.</p>
+                     <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+                        <h3 class="text-xl font-bold text-center text-stone-800 mb-4">First-Year Annual Cost by Tool Category</h3>
+                        <div class="chart-container">
+                            <canvas id="techStackChart"></canvas>
+                        </div>
+                     </div>
+                </section>
+
+                <!-- Section: AI Governance -->
+                <section id="ai-governance" class="scroll-mt-20">
+                     <h2 class="text-3xl font-bold text-stone-900 mb-2">AI Governance Dashboard</h2>
+                    <p class="text-lg text-stone-600 mb-8 max-w-4xl">A core principle of the Digital Office is robust AI governance. This section provides an inventory of all AI systems, classified by their risk level according to the EU AI Act framework. This dashboard ensures transparency and compliance for all AI development and deployment.</p>
+                    <div id="ai-systems-gallery" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        <!-- AI System cards populated by JS -->
+                    </div>
+                </section>
+
+                <!-- Section: Open Questions -->
+                <section id="open-questions" class="scroll-mt-20">
+                    <h2 class="text-3xl font-bold text-stone-900 mb-2">Open Questions for Human Decision</h2>
+                    <p class="text-lg text-stone-600 mb-8 max-w-4xl">The following items were identified during the system design phase as unresolved. They represent strategic ambiguities that require stakeholder discussion and decisions to finalize implementation.</p>
+
+                    <div class="space-y-8">
+                        <div>
+                            <h3 class="text-xl font-bold text-stone-800 mb-4 border-b-2 border-teal-500 pb-2">Technology & Integration</h3>
+                            <ul id="tech-questions-list" class="list-none space-y-4">
+                                <!-- Questions populated by JS -->
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-stone-800 mb-4 border-b-2 border-teal-500 pb-2">Strategy & Definitions</h3>
+                            <ul id="strategy-questions-list" class="list-none space-y-4">
+                                <!-- Questions populated by JS -->
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- DATA ---
+    const schemaData = {
+        entities: {
+            'AI_Notebook_Knowledge_Hub': { description: 'A central repository for documentation, project tracking, and a library for AI prompts.', properties: { Name: { type: 'title' }}},
+            'Workstreams': { description: 'Tangible outcomes and activities created by teams (Tasks, Content Pieces, Products).', properties: { Name: { type: 'title' }, Status: { type: 'status', options: ['🟢 Green', '🟡 Yellow', '🔵 Blue', '🔴 Red', '⚫ Black', '⚪ White'] }, Team: { type: 'select', options: ['Admin', 'Tools', 'Culture', 'Council', 'Products', 'Media', 'Research'] }, Responsible_R: { type: 'people' }, Accountable_A: { type: 'people' }, Consulted_C: { type: 'people' }, Informed_I: { type: 'people' }, ContentType: { type: 'select', options: ['SaaS Platform', 'Consultancy', 'Courses', 'Website', 'Podcast', 'Video Shorts', 'Literature Review', 'Competitor Analysis', 'AIX Research'] }, Client_Coachee: { type: 'rich_text' }, Environment: { type: 'rich_text' }, Version: { type: 'rich_text' }, Date: { type: 'date' }, StartDate: { type: 'date' }, EndDate: { type: 'date' }, Description: { type: 'rich_text' }, Attendees: { type: 'people' }, GCal_Event_ID: { type: 'rich_text' }, Last_Edited_Time: { type: 'last_edited_time' }, Related_Value_Rules: { type: 'relation', target_entity: 'Value_Rules' }}},
+            'Value_Rules': { description: 'The core principles and guiding behaviors for daily work.', properties: { Name: { type: 'title' }, Exact_Wording: { type: 'rich_text' }, Anti_examples: { type: 'rich_text' }, Description: { type: 'rich_text' }}},
+            'AI_Systems': { description: 'Descriptions and management of AI systems being developed or deployed.', properties: { Name: { type: 'title' }, Risk_Level: { type: 'select', options: ['Unacceptable', 'High', 'Limited', 'Minimal'] }, AI_Capability: { type: 'rich_text' }, Non_Goals: { type: 'rich_text' }, Decision_Rights: { type: 'rich_text' }, Guardrails: { type: 'rich_text' }, Uncertainty_UX: { type: 'rich_text' }, Explainability: { type: 'rich_text' }, Fallbacks_Recovery: { type: 'rich_text' }, Metrics: { type: 'rich_text' }, Logging_Review: { type: 'rich_text' }, Human_Oversight_Requirements: { type: 'rich_text' }, Technical_Documentation: { type: 'files' }, Data_Governance_Plan: { type: 'files' }, Bias_Assessment_Mitigation: { type: 'rich_text' }, Accuracy_Metrics: { type: 'number' }, Cybersecurity_Measures: { type: 'rich_text' }, Adversarial_Testing_Results: { type: 'files' }, Post_Market_Monitoring_Plan: { type: 'files' }, Generative_AI_Risks: { type: 'multi_select', options: ['Hallucination', 'Data Poisoning', 'Malicious Use', 'Copyright Infringement'] }, FRIA_Conducted: { type: 'checkbox' }, Environmental_Impact_kWh: { type: 'number' }, Specific_Human_Oversight_Protocols: { type: 'files' }, Bounded_Autonomy_Framework: { type: 'files' }, Compliance_Roadmap: { type: 'files' }}},
+            'Signals': { description: 'Measurable inputs that contribute to the Culture Homeostasis Index (CHI).', properties: { Signal_Input: { type: 'title' }, Data_Type: { type: 'select', options: ['Think', 'Say', 'Do', 'Feel'] }, Source_View: { type: 'select', options: ['Internal', 'External'] }, Weight_Score: { type: 'number' }, Impact_Level: { type: 'select', options: ['Micro', 'Meso', 'Macro', 'Mundo'] }, Confidence_Notes: { type: 'rich_text' }, Domain_Anchor: { type: 'multi_select', options: ['Human', 'Organizational', 'Operational', 'Environmental'] }, Formula: { type: 'rich_text' }, Description: { type: 'rich_text' }}},
+            'Rules_SRME': { description: 'Proposed behavioral rules generated by the Semantic Rule Matching Engine (SRME).', properties: { Trigger: { type: 'title' }, Value: { type: 'relation', target_entity: 'Value_Rules' }, Impact_Level: { type: 'select', options: ['Micro', 'Meso', 'Macro', 'Mundo'] }, Rule: { type: 'rich_text' }, NLP_derived_Keywords: { type: 'multi_select' }}},
+            'Micro_Habits': { description: 'Small, repeatable actions suggested by the SRME.', properties: { Micro_habit: { type: 'title' }, Related_Rule: { type: 'relation', target_entity: 'Rules_SRME' }, Related_Value: { type: 'relation', target_entity: 'Value_Rules' }}},
+            'Open_Roles': { description: 'Positions being recruited for.', properties: { Role_Name: { type: 'title' }, Status: { type: 'status', options: ['🟢 Green', '🟡 Yellow', '🔵 Blue', '🔴 Red', '⚫ Black', '⚪ White'] }, Team: { type: 'select', options: ['Admin', 'Tools', 'Culture', 'Council', 'Products', 'Media', 'Research'] }, Focus: { type: 'rich_text' }, Key_Activities: { type: 'rich_text' }}},
+            'Candidates': { description: 'Individuals applying for open roles.', properties: { Full_Name: { type: 'title' }, Status: { type: 'status', options: ['🟢 Green', '🟡 Yellow', '🔵 Blue', '🔴 Red', '⚫ Black', '⚪ White'] }, Open_Role: { type: 'relation', target_entity: 'Open_Roles' }, Folk_Person_ID: { type: 'rich_text' }, Email: { type: 'email' }, Phone: { type: 'phone' }, Company: { type: 'relation', target_entity: 'Companies' }, Notion_Record_ID: { type: 'formula', formula: 'id()' }}},
+            'Companies': { description: 'Organizations related to contacts.', properties: { Name: { type: 'title' }, Folk_Company_ID: { type: 'rich_text' }}},
+            'Contacts': { description: 'Individuals in the CRM, for recruiting and outreach.', properties: { Name: { type: 'title' }}},
+            'Onboarding_ToDos': { description: 'Goals and tasks for new team members.', properties: { Goal_Task_Name: { type: 'title' }, Assigned_Person: { type: 'people' }, Status: { type: 'status', options: ['🟢 Green', '🟡 Yellow', '🔵 Blue', '🔴 Red', '⚫ Black', '⚪ White'] }, Description: { type: 'rich_text' }}},
+            'Knowledge_Items': { description: 'New information, ideas, links, or files captured for the "Knowledge Garden".', properties: { Name: { type: 'title' }, Type: { type: 'select', options: ['Link', 'File', 'Insight'] }, Tags: { type: 'multi_select', options: ['[Insight]', '[DataPoint]', '[Quote]', '[CaseStudy]', '[ActionItem]', '[Contact]'] }, URL: { type: 'url' }, File: { type: 'files' }, Summary_Notes: { type: 'rich_text' }}},
+            'Tech_Stack': { description: 'The collection of software and platforms used by the organization.', properties: { Tool_Name: { type: 'title' }, Strategic_Purpose: { type: 'rich_text' }, Plan_Edition: { type: 'select' }, Seats_Licenses: { type: 'number' }, Billing_Cycle: { type: 'select', options: ['Annual', 'Monthly', 'One-Time'] }, Cost_per_Unit_Month: { type: 'number', format: 'currency' }, First_Year_Annual_Cost: { type: 'number', format: 'currency' }, Status: { type: 'select', options: ['Up & Running', 'To Investigate', 'To Buy or Change', 'Idea', 'Check with Team'] }, Tool_Category: { type: 'select', options: ['Core Productivity & AI', 'Knowledge Management', 'Rapid Prototyping', 'Workflow Automation', 'Structured Data Intake', 'Security & Access', 'Platform Database & Workflows', 'Interaction Design (Asynchronous Tools)', 'Sales', 'Research', 'Recruiting & Investor Networking', 'Paygates & Domains'] }}},
+            'Benchmarks': { description: 'Organizations identified for competitive analysis or as sources of inspiration.', properties: { Company_Service_Name: { type: 'title' }, Website_URL: { type: 'url' }, Logo_URL: { type: 'url' }, Category: { type: 'select', options: ['Direct Competitor', 'Inspirational Benchmark'] }, Sub_Category: { type: 'select', options: ['Employee App / Comms', 'HRIS', 'Culture Consulting', 'People Analytics / ONA', 'AI Governance / Ethics', 'Community Hub', 'Employee Experience', 'Performance Management', 'HCM Suite', 'Experience Management'] }, Rationale_for_Inclusion: { type: 'rich_text' }}}
+        },
+        relationships: [
+            { from: 'Workstreams', to: 'Value_Rules' },
+            { from: 'Rules_SRME', to: 'Value_Rules' },
+            { from: 'Micro_Habits', to: 'Value_Rules' },
+            { from: 'Micro_Habits', to: 'Rules_SRME' },
+            { from: 'Candidates', to: 'Open_Roles' },
+            { from: 'Candidates', to: 'Companies' }
+        ]
+    };
+
+    const techStackData = {
+        'Core Productivity & AI': 240,
+        'Knowledge Management': 192,
+        'Rapid Prototyping': 576,
+        'Workflow Automation': 1188,
+        'Security & Access': 360,
+        'Platform Database & Workflows': 960,
+        'Interaction Design (Asynchronous Tools)': 380.04,
+        'Sales': 18000,
+        'Recruiting & Investor Networking': 622.
+    };
+
+    const aiSystemsData = [
+        { name: 'Cultural Tension Classifier', risk: 'Limited', description: 'Analyzes text inputs to identify potential cultural misalignments.' },
+        { name: 'SRME Rule Generator', risk: 'High', description: 'Generates behavioral rules based on identified cultural tensions and value rules.' },
+        { name: 'Recruiting Profile Matcher', risk: 'High', description: 'Scores and ranks candidates based on their profile against open role requirements.' },
+        { name: 'Sentiment Analysis Bot', risk: 'Minimal', description: 'Monitors public channels for brand sentiment.' },
+        { name: 'Automated Onboarding Assistant', risk: 'Limited', description: 'Guides new hires through their initial tasks and provides resources.' },
+        { name: 'Knowledge Hub Summarizer', risk: 'Minimal', description: 'Creates summaries of long documents added to the knowledge base.' }
+    ];
+
+    const openQuestionsData = {
+        technology: [
+            "**Notion's Role as CRM/PM Hub:** Conflicting analysis on suitability. Decide scope vs. dedicated tools like HubSpot or Folk.",
+            "**Folk's Role in Tech Stack:** Should it be integrated for multi-channel recruiting? Define its precise function.",
+            "**AI Agent Integration:** A decision is pending on which specific AI agent tools (e.g., Salesforce's AI Agent) to investigate or adopt.",
+            "**Paygates & Domains:** Status is 'Unknown.' Clarify requirements and make decisions.",
+            "**Notion Calendar Sync Limitations:** Lacks true bi-directional sync. Accept this limitation or invest in a third-party sync service?",
+            "**Zapier/Make.com Sync Complexity:** Creates 'maintenance debt.' Accept this complexity or seek dedicated services/custom API development?"
+        ],
+        strategy: [
+            "**Homeostasis Coefficient Definition:** Needs a clear, structured definition and format for tabulation.",
+            "**Capital Efficiency Target Discrepancy:** Projected first-year TCO ($22,118.04) yields ~6.8x efficiency, far below the 40x target. Adjust the target, feature set, or budget?"
+        ]
+    };
+
+    // --- RENDER FUNCTIONS ---
+
+    // Entity Explorer
+    const entitySelect = document.getElementById('entity-select');
+    const entityDetailsContainer = document.getElementById('entity-details');
+
+    function renderEntityExplorer() {
+        const entityNames = Object.keys(schemaData.entities);
+        entitySelect.innerHTML = entityNames.map(name => `<option value="${name}">${name.replace(/_/g, ' ')}</option>`).join('');
+        entitySelect.addEventListener('change', () => renderEntityDetails(entitySelect.value));
+        renderEntityDetails(entityNames[0]);
+    }
+
+    function renderEntityDetails(entityName) {
+        const entity = schemaData.entities[entityName];
+        if (!entity) return;
+
+        let propertiesHtml = Object.entries(entity.properties).map(([propName, propDef]) => {
+            let optionsHtml = '';
+            if (propDef.options) {
+                optionsHtml = `<div class="mt-2 flex flex-wrap gap-2">${propDef.options.map(opt => `<span class="bg-stone-200 text-stone-700 text-xs font-medium px-2.5 py-1 rounded-full">${opt}</span>`).join('')}</div>`;
+            }
+            if (propDef.type === 'relation') {
+                 optionsHtml = `<div class="mt-2 text-sm text-stone-500">🔗 Relates to: <a href="#entity-explorer" onclick="document.getElementById('entity-select').value='${propDef.target_entity}'; document.getElementById('entity-select').dispatchEvent(new Event('change'));" class="font-semibold text-teal-600 hover:underline">${propDef.target_entity.replace(/_/g, ' ')}</a></div>`;
+            }
+
+            return `
+                <tr class="property-table-row border-b border-stone-200">
+                    <td class="py-3 px-4 font-semibold text-stone-800">${propName.replace(/_/g, ' ')}</td>
+                    <td class="py-3 px-4 text-stone-600"><span class="bg-teal-100 text-teal-800 text-sm font-medium px-3 py-1 rounded-full">${propDef.type}</span></td>
+                    <td class="py-3 px-4 text-stone-600">${optionsHtml || '—'}</td>
+                </tr>
+            `;
+        }).join('');
+
+        entityDetailsContainer.innerHTML = `
+            <h3 class="text-2xl font-bold text-stone-800 mb-2">${entityName.replace(/_/g, ' ')}</h3>
+            <p class="text-stone-600 mb-6">${entity.description}</p>
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-left text-sm">
+                    <thead class="bg-stone-100">
+                        <tr>
+                            <th class="py-3 px-4 font-semibold text-stone-600 uppercase tracking-wider">Property Name</th>
+                            <th class="py-3 px-4 font-semibold text-stone-600 uppercase tracking-wider">Type</th>
+                            <th class="py-3 px-4 font-semibold text-stone-600 uppercase tracking-wider">Details / Options</th>
+                        </tr>
+                    </thead>
+                    <tbody>${propertiesHtml}</tbody>
+                </table>
+            </div>
+        `;
+    }
+
+    // Tech Stack Chart
+    function renderTechStackChart() {
+        const ctx = document.getElementById('techStackChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(techStackData),
+                datasets: [{
+                    label: 'First-Year Annual Cost ($)',
+                    data: Object.values(techStackData),
+                    backgroundColor: 'rgba(20, 184, 166, 0.6)',
+                    borderColor: 'rgba(15, 118, 110, 1)',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            autoSkip: false,
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // AI Governance Gallery
+    function renderAIGovernance() {
+        const gallery = document.getElementById('ai-systems-gallery');
+        const riskColors = {
+            'Unacceptable': 'border-red-500 bg-red-50',
+            'High': 'border-orange-500 bg-orange-50',
+            'Limited': 'border-amber-500 bg-amber-50',
+            'Minimal': 'border-green-500 bg-green-50',
+        };
+        gallery.innerHTML = aiSystemsData.map(system => `
+            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 ${riskColors[system.risk] || 'border-stone-300'}">
+                <div class="flex justify-between items-start mb-2">
+                    <h4 class="text-xl font-bold text-stone-800">${system.name}</h4>
+                    <span class="text-sm font-semibold px-3 py-1 rounded-full ${riskColors[system.risk]?.replace('border-', 'bg-').replace('-500', '-100').replace('-50', '-200/50')} text-${riskColors[system.risk]?.split(' ')[0].split('-')[0]}-800">${system.risk} Risk</span>
+                </div>
+                <p class="text-stone-600">${system.description}</p>
+            </div>
+        `).join('');
+    }
+    
+    // Open Questions
+    function renderOpenQuestions() {
+        const techList = document.getElementById('tech-questions-list');
+        const strategyList = document.getElementById('strategy-questions-list');
+
+        techList.innerHTML = openQuestionsData.technology.map(q => `
+            <li class="bg-white p-4 rounded-lg shadow-sm border border-stone-200 flex items-start">
+                <span class="text-teal-500 font-bold mr-3 mt-1">●</span>
+                <p class="text-stone-700">${q.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-stone-900">$1</strong>')}</p>
+            </li>
+        `).join('');
+        strategyList.innerHTML = openQuestionsData.strategy.map(q => `
+             <li class="bg-white p-4 rounded-lg shadow-sm border border-stone-200 flex items-start">
+                <span class="text-teal-500 font-bold mr-3 mt-1">●</span>
+                <p class="text-stone-700">${q.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-stone-900">$1</strong>')}</p>
+            </li>
+        `).join('');
+    }
+
+    // Relationship Visualizer
+    function renderVisualizer() {
+        const container = document.getElementById('visualizer-container');
+        const entities = Object.keys(schemaData.entities);
+        const positions = {};
+        const nodeElements = {};
+
+        // Simple circular layout algorithm
+        const radius = Math.min(container.offsetWidth, container.offsetHeight) * 0.35;
+        const centerX = container.offsetWidth / 2;
+        const centerY = container.offsetHeight / 2;
+        const angleStep = (2 * Math.PI) / entities.length;
+
+        entities.forEach((entity, index) => {
+            const angle = angleStep * index;
+            const x = centerX + radius * Math.cos(angle);
+            const y = centerY + radius * Math.sin(angle);
+            positions[entity] = { x, y };
+
+            const node = document.createElement('div');
+            node.id = `node-${entity}`;
+            node.className = 'node absolute p-3 bg-white border-2 border-stone-300 rounded-lg text-center';
+            node.style.left = `${x - 60}px`;
+            node.style.top = `${y - 20}px`;
+            node.style.width = '120px';
+            node.textContent = entity.replace(/_/g, ' ');
+            node.dataset.entity = entity;
+            container.appendChild(node);
+            nodeElements[entity] = node;
+        });
+
+        const lines = {};
+        schemaData.relationships.forEach((rel, index) => {
+            const pos1 = positions[rel.from];
+            const pos2 = positions[rel.to];
+            if (!pos1 || !pos2) return;
+
+            const line = document.createElement('div');
+            line.id = `line-${rel.from}-${rel.to}`;
+            line.className = 'line';
+            const dx = pos2.x - pos1.x;
+            const dy = pos2.y - pos1.y;
+            const length = Math.sqrt(dx * dx + dy * dy);
+            const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+            line.style.width = `${length}px`;
+            line.style.left = `${pos1.x}px`;
+            line.style.top = `${pos1.y}px`;
+            line.style.transform = `rotate(${angle}deg)`;
+            container.appendChild(line);
+            lines[`${rel.from}-${rel.to}`] = line;
+            lines[`${rel.to}-${rel.from}`] = line;
+        });
+
+        container.addEventListener('click', (e) => {
+            const node = e.target.closest('.node');
+            if (!node) return;
+
+            const entity = node.dataset.entity;
+            
+            // Highlight in visualizer
+            document.querySelectorAll('.node, .line').forEach(el => el.classList.remove('highlighted'));
+            node.classList.add('highlighted');
+            schemaData.relationships.forEach(rel => {
+                if (rel.from === entity || rel.to === entity) {
+                    lines[`${rel.from}-${rel.to}`]?.classList.add('highlighted');
+                    nodeElements[rel.from]?.classList.add('highlighted');
+                    nodeElements[rel.to]?.classList.add('highlighted');
+                }
+            });
+
+            // Update and scroll to explorer
+            entitySelect.value = entity;
+            entitySelect.dispatchEvent(new Event('change'));
+            document.getElementById('entity-explorer').scrollIntoView({ behavior: 'smooth' });
+        });
+    }
+
+
+    // --- NAVIGATION AND SCROLLSPY ---
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('section');
+    
+    const observerOptions = { root: null, rootMargin: '0px', threshold: 0.3 };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.getAttribute('id');
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+                });
+            }
+        });
+    }, observerOptions);
+
+    sections.forEach(section => observer.observe(section));
+
+    // --- MOBILE NAV ---
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileNavContainer = document.getElementById('mobile-nav');
+    const desktopNav = document.getElementById('desktop-nav');
+    
+    mobileNavContainer.innerHTML = desktopNav.innerHTML;
+    
+    mobileMenuButton.addEventListener('click', () => {
+        mobileNavContainer.classList.toggle('hidden');
+    });
+
+    mobileNavContainer.addEventListener('click', (e) => {
+        if(e.target.tagName === 'A') {
+            mobileNavContainer.classList.add('hidden');
+        }
+    });
+
+
+    // --- INITIALIZE ---
+    renderEntityExplorer();
+    renderTechStackChart();
+    renderAIGovernance();
+    renderOpenQuestions();
+    // Use timeout to ensure container has dimensions before calculating layout
+    setTimeout(renderVisualizer, 100);
+});
+</script>
+
 </body>
 </html>

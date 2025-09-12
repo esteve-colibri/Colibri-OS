@@ -1,0 +1,28 @@
+{
+  "name": "notion-digital-office-generator",
+  "version": "1.0.0",
+  "description": "Scripts to set up a Notion Digital Office based on a YAML spec.",
+  "main": "scripts/setup.mjs",
+  "type": "module",
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "seed": "node scripts/seed.mjs",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "notion",
+    "api",
+    "automation",
+    "digital-office"
+  ],
+  "author": "Your Name",
+  "license": "ISC",
+  "dependencies": {
+    "@notionhq/client": "^2.2.14",
+    "dotenv": "^16.4.5",
+    "js-yaml": "^4.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
