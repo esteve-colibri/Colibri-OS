@@ -10,6 +10,9 @@ entities:
     sample_data:
       - Name: "Prompt Engineering Guide"
       - Name: "AI Project Tracker"
+      - Name: "LLM Prompt Library"
+      - Name: "Notion API Cookbook"
+      - Name: "Meeting Notes Template"
 
   Active Branches - Workstreams:
     description: Tangible outcomes and activities created by teams (Tasks, Content Pieces, Products).
@@ -17,10 +20,10 @@ entities:
       Name:
         type: title
         description: "The main title of the workstream."
-        Status:
-          type: status
-          options: ["Open"]
-          description: "Current progress or state (e.g., Not Started, In Progress, Done)."
+      Status:
+        type: status
+        options: ["Open", "In Progress", "Not Started", "Done"]
+        description: "Current progress or state (e.g., Not Started, In Progress, Done)."
       Team:
         type: select
         options: ["Admin", "Tools", "Culture", "Council", "Products", "Media", "Research"]
@@ -47,11 +50,35 @@ entities:
         Team: "Products"
         ContentType: "Website"
         Description: "Building the new company website."
+        Responsible_R: ["Jane Doe"]
+        Accountable_A: ["Alex Smith"]
+        Consulted_C: ["Maria Garcia"]
+        Informed_I: ["John Smith"]
+        Version: "v1.2"
+        Date: "2025-09-01"
+        StartDate: "2025-08-01"
+        EndDate: "2025-10-01"
+        Attendees: ["Jane Doe", "Alex Smith"]
+        GCal_Event_ID: "gcal_123456"
+        Last_Edited_Time: "2025-09-16T12:00:00Z"
+        Related_Value_Rules: ["Clarity and Transparency"]
       - Name: "Podcast Series"
         Status: "Not Started"
         Team: "Media"
         ContentType: "Podcast"
         Description: "Launching a new podcast series."
+        Responsible_R: ["Maria Garcia"]
+        Accountable_A: ["John Smith"]
+        Consulted_C: ["Jane Doe"]
+        Informed_I: ["Alex Smith"]
+        Version: "v0.9"
+        Date: "2025-09-10"
+        StartDate: "2025-09-05"
+        EndDate: "2025-12-01"
+        Attendees: ["Maria Garcia", "John Smith"]
+        GCal_Event_ID: "gcal_654321"
+        Last_Edited_Time: "2025-09-16T13:00:00Z"
+        Related_Value_Rules: ["Empathy First"]
 
   Organisational DNA - Value_Rules:
     description: The core principles and guiding behaviors for daily work.
@@ -77,6 +104,22 @@ entities:
         Exact_Wording: "We prioritize work that aligns with our values."
         Anti_examples: "Doing busywork for its own sake."
         Description: "Focus on meaningful outcomes."
+      - Name: "Bias for Action"
+        Exact_Wording: "We act quickly and iterate."
+        Anti_examples: "Analysis paralysis."
+        Description: "Encourages experimentation."
+      - Name: "Empathy First"
+        Exact_Wording: "We listen and understand before acting."
+        Anti_examples: "Ignoring feedback."
+        Description: "Promotes a supportive culture."
+      - Name: "Bias for Action"
+        Exact_Wording: "We act quickly and iterate."
+        Anti_examples: "Analysis paralysis."
+        Description: "Encourages experimentation."
+      - Name: "Empathy First"
+        Exact_Wording: "We listen and understand before acting."
+        Anti_examples: "Ignoring feedback."
+        Description: "Promotes a supportive culture."
 
   Intelligent Systems - Al_Systems:
     description: Descriptions and management of AI systems being developed or deployed.
@@ -162,9 +205,59 @@ entities:
       - Name: "AI Chatbot"
         Risk_Level: "Limited"
         AI_Capability: "Conversational support for users."
+        Non_Goals: "Not for financial advice."
+        Decision_Rights: "Product Manager"
+        Guardrails: "No personal data storage."
+        Uncertainty_UX: "Shows confidence score."
+        Explainability: "Displays reasoning steps."
+        Fallbacks_Recovery: "Escalate to human."
+        Metrics: "User satisfaction, response time."
+        Logging_Review: "Weekly log review."
+        Human_Oversight_Requirements: "Manual review for flagged cases."
+        Technical_Documentation: ["/docs/ai_chatbot_tech.pdf"]
+        Data_Governance_Plan: ["/docs/data_gov.pdf"]
+        Bias_Assessment_Mitigation: "Bias tested quarterly."
+        Accuracy_Metrics: 0.95
+        Cybersecurity_Measures: "Encrypted at rest."
+        Adversarial_Testing_Results: ["/docs/adv_test.pdf"]
+        Post_Market_Monitoring_Plan: ["/docs/monitoring.pdf"]
+        Generative_AI_Risks: ["Hallucination", "Malicious Use"]
+        FRIA_Conducted: true
+        Environmental_Impact_kWh: 1200
+        Specific_Human_Oversight_Protocols: ["/docs/oversight.pdf"]
+        Bounded_Autonomy_Framework: ["/docs/autonomy.pdf"]
+        Compliance_Roadmap: ["/docs/compliance.pdf"]
       - Name: "Document Summarizer"
         Risk_Level: "Minimal"
         AI_Capability: "Summarizes uploaded documents."
+        Non_Goals: "No translation."
+        Decision_Rights: "Research Lead"
+        Guardrails: "No external API calls."
+        Uncertainty_UX: "Shows summary confidence."
+        Explainability: "Highlights key points."
+        Fallbacks_Recovery: "Retry on error."
+        Metrics: "Summary accuracy."
+        Logging_Review: "Monthly log review."
+        Human_Oversight_Requirements: "Random sample review."
+        Technical_Documentation: ["/docs/summarizer_tech.pdf"]
+        Data_Governance_Plan: ["/docs/data_gov_summarizer.pdf"]
+        Bias_Assessment_Mitigation: "Bias tested annually."
+        Accuracy_Metrics: 0.89
+        Cybersecurity_Measures: "Firewall protected."
+        Adversarial_Testing_Results: ["/docs/adv_test_summarizer.pdf"]
+        Post_Market_Monitoring_Plan: ["/docs/monitoring_summarizer.pdf"]
+        Generative_AI_Risks: ["Copyright Infringement"]
+        FRIA_Conducted: false
+        Environmental_Impact_kWh: 800
+        Specific_Human_Oversight_Protocols: ["/docs/oversight_summarizer.pdf"]
+        Bounded_Autonomy_Framework: ["/docs/autonomy_summarizer.pdf"]
+        Compliance_Roadmap: ["/docs/compliance_summarizer.pdf"]
+      - Name: "Image Classifier"
+        Risk_Level: "High"
+        AI_Capability: "Classifies uploaded images."
+      - Name: "Sentiment Analyzer"
+        Risk_Level: "Minimal"
+        AI_Capability: "Analyzes sentiment in text."
 
   Ecosystems Monitoring - Signals:
     description: Measurable inputs that contribute to the Culture Homeostasis Index (CHI).
@@ -206,13 +299,31 @@ entities:
         Source_View: "Internal"
         Weight_Score: 5
         Impact_Level: "Micro"
+        Confidence_Notes: "High confidence from repeated feedback."
+        Domain_Anchor: ["Human", "Organizational"]
+        Formula: "AVG(feedback_score)"
         Description: "Feedback from team meetings."
       - Signal_Input: "Customer Survey"
         Data_Type: "Feel"
         Source_View: "External"
         Weight_Score: 8
         Impact_Level: "Macro"
+        Confidence_Notes: "Survey response rate 80%."
+        Domain_Anchor: ["Operational"]
+        Formula: "SUM(survey_scores)"
         Description: "Results from customer satisfaction surveys."
+      - Signal_Input: "System Uptime"
+        Data_Type: "Do"
+        Source_View: "Internal"
+        Weight_Score: 10
+        Impact_Level: "Macro"
+        Description: "Automated uptime monitoring."
+      - Signal_Input: "Market News"
+        Data_Type: "Think"
+        Source_View: "External"
+        Weight_Score: 3
+        Impact_Level: "Mundo"
+        Description: "Industry news and trends."
 
   Neural Pathways - Rules_SRME:
     description: Proposed behavioral rules generated by the Semantic Rule Matching Engine (SRME).
@@ -239,6 +350,11 @@ entities:
         Value: "Clarity and Transparency"
         Impact_Level: "Micro"
         Rule: "Notify the team and update the project plan."
+        NLP_derived_Keywords: ["deadline", "delay"]
+      - Trigger: "Customer Complaint"
+        Value: "Empathy First"
+        Impact_Level: "Macro"
+        Rule: "Escalate to support and log feedback."
 
   Daily Practices - Micro_Habits:
     description: Small, repeatable actions suggested by the SRME.
@@ -258,6 +374,9 @@ entities:
       - Micro_habit: "Daily Standup"
         Related_Rule: "Missed Deadline"
         Related_Value: "Clarity and Transparency"
+      - Micro_habit: "Weekly Demo"
+        Related_Rule: "Customer Complaint"
+        Related_Value: "Empathy First"
 
   Growth Opportunities - Open_Roles:
     description: Positions being recruited for.
@@ -265,10 +384,10 @@ entities:
       Role_Name:
         type: title
         description: "The name of the open role."
-        Status:
-          type: status
-          options: ["Open"]
-          description: "Current status of the open role."
+      Status:
+        type: status
+        options: ["Open"]
+        description: "Current status of the open role."
       Team:
         type: select
         options: ["Admin", "Tools", "Culture", "Council", "Products", "Media", "Research"]
@@ -285,6 +404,11 @@ entities:
         Team: "Research"
         Focus: "Develop new AI models."
         Key_Activities: "Research, prototyping, documentation."
+      - Role_Name: "Product Manager"
+        Status: "Open"
+        Team: "Products"
+        Focus: "Lead product development."
+        Key_Activities: "Roadmapping, stakeholder management."
 
   Talent Pipeline - Candidates:
     description: Individuals applying for open roles.
@@ -292,14 +416,15 @@ entities:
       Full_Name:
         type: title
         description: "Full name of the candidate."
-      Status:
-        type: status
-        options: ["Open"]
-        description: "Current status in the recruiting pipeline."
-      Open_Role:
-        type: relation
-        target_entity: Growth Opportunities - Open_Roles
-        description: "The open role this candidate is applying for."
+      # Status property: use only the select version below
+        Status:
+          type: select
+          options: ["Applied", "Open", "Closed", "Lost"]
+          description: "Current status in the recruiting pipeline."
+        Open_Role:
+          type: relation
+          target_entity: Growth Opportunities - Open_Roles
+          description: "The open role this candidate is applying for."
       Folk_Person_ID:
         type: rich_text
         description: "ID from Folk CRM, if available."
@@ -361,6 +486,49 @@ entities:
         Open_Role: "AI Researcher"
         Email: "jane.doe@email.com"
         Phone: "+1234567890"
+        Company: "OpenAI"
+        Notion_Record_ID: "rec_123"
+        Companies: ["OpenAI"]
+        Job_title: "ML Engineer"
+        Emails: ["jane.doe@email.com"]
+        Mv_last_interaction: "2025-09-10"
+        Team_last_interaction: "2025-09-12"
+        Last_interaction_bv: "2025-09-14"
+        Urls: ["https://linkedin.com/in/janedoe"]
+        Description: "Strong candidate for AI roles."
+        My_total_interactions: 3
+        Strongest_connection: "Alex Smith"
+        Phone_numbers: ["+1234567890"]
+        Addresses: ["123 Main St"]
+        First_name: "Jane"
+        Last_name: "Doe"
+        Birthday: "1990-01-01"
+        Gender: "Female"
+        Groups_in_Folk: ["AI Talent"]
+        Created_at: "2025-09-01T10:00:00Z"
+        Created_by: "Alex Smith"
+        Added_to_group_at: "2025-09-02"
+        Added_to_group_by: "Alex Smith"
+        Emails_company: ["hr@openai.com"]
+        Urls_company: ["https://openai.com"]
+        Phone_numbers_company: ["+1234567890"]
+        Addresses_company: ["123 Main St"]
+        Channel: "Email"
+        Closed_date: "2025-09-20"
+        Company_size: "201-500"
+        Company_vertical: "AI Research"
+        Deal_value: 100000
+        Lost_reason: "Accepted another offer"
+        Next_steps: "Follow up in 6 months"
+        Prospect_owner: "Alex Smith"
+        Funding_raised: 5000000
+        Priority: "High"
+        Service: "Recruiting"
+      - Full_Name: "Alex Smith"
+        Status: "Open"
+        Open_Role: "Product Manager"
+        Email: "alex.smith@email.com"
+        Phone: "+1987654321"
 
   Ecosystem Partners - Companies:
     description: Organizations related to contacts.
@@ -374,6 +542,8 @@ entities:
     sample_data:
       - Name: "OpenAI"
         Folk_Company_ID: "FOLK1234"
+      - Name: "Acme Corp"
+        Folk_Company_ID: "FOLK5678"
 
   Network Forest - Contacts:
     description: Individuals in the CRM, for recruiting and outreach.
@@ -421,6 +591,43 @@ entities:
       Status: { type: select, options: ["Open", "Closed", "Lost"] }
     sample_data:
       - Name: "John Smith"
+        Companies: ["OpenAI"]
+        Job_title: "CTO"
+        Emails: ["john.smith@email.com"]
+        Mv_last_interaction: "2025-09-10"
+        Team_last_interaction: "2025-09-12"
+        Last_interaction_bv: "2025-09-14"
+        Urls: ["https://linkedin.com/in/johnsmith"]
+        Description: "Key technical contact."
+        My_total_interactions: 5
+        Strongest_connection: "Jane Doe"
+        Phone_numbers: ["+1234567890"]
+        Addresses: ["456 Main St"]
+        First_name: "John"
+        Last_name: "Smith"
+        Birthday: "1985-05-05"
+        Gender: "Male"
+        Groups_in_Folk: ["Tech Leaders"]
+        Created_at: "2025-09-01T10:00:00Z"
+        Created_by: "Jane Doe"
+        Added_to_group_at: "2025-09-02"
+        Added_to_group_by: "Jane Doe"
+        Emails_company: ["info@openai.com"]
+        Urls_company: ["https://openai.com"]
+        Phone_numbers_company: ["+1234567890"]
+        Addresses_company: ["456 Main St"]
+        Channel: "LinkedIn"
+        Closed_date: "2025-09-20"
+        Company_size: "201-500"
+        Company_vertical: "AI Research"
+        Deal_value: 200000
+        Lost_reason: "Budget constraints"
+        Next_steps: "Check back next quarter"
+        Prospect_owner: "Jane Doe"
+        Funding_raised: 10000000
+        Priority: "Medium"
+        Service: "Consulting"
+      - Name: "Maria Garcia"
 
   New Growth & Action-Learning - Onboarding_ToDos:
     description: Goals and tasks for new team members.
@@ -433,7 +640,7 @@ entities:
         description: "Person assigned to the task."
       Status:
         type: status
-        options: ["Open"]
+        options: ["Not Started", "Open", "In Progress", "Done"]
         description: "Current status of the onboarding task."
       Description:
         type: rich_text
@@ -443,6 +650,14 @@ entities:
         Assigned_Person: "Jane Doe"
         Status: "Not Started"
         Description: "Mandatory security training for all new hires."
+      - Goal_Task_Name: "Shadow a Team Member"
+        Assigned_Person: "Alex Smith"
+        Status: "Open"
+        Description: "Observe a senior team member for a day."
+      - Goal_Task_Name: "Shadow a Team Member"
+        Assigned_Person: "Alex Smith"
+        Status: "Open"
+        Description: "Observe a senior team member for a day."
 
   Captured Insights - Knowledge_ltems:
     description: New information, ideas, links, or files captured for the "Knowledge Garden".
@@ -473,6 +688,16 @@ entities:
         Tags: ["[Insight]", "[DataPoint]"]
         URL: "https://arxiv.org/abs/1234.5678"
         Summary_Notes: "Key takeaways from the latest research."
+      - Name: "Prompt Engineering Blog"
+        Type: "Link"
+        Tags: ["[Insight]", "[ActionItem]"]
+        URL: "https://blog.prompt.engineering"
+        Summary_Notes: "Best practices for prompt design."
+      - Name: "Prompt Engineering Blog"
+        Type: "Link"
+        Tags: ["[Insight]", "[ActionItem]"]
+        URL: "https://blog.prompt.engineering"
+        Summary_Notes: "Best practices for prompt design."
 
   Tech Foundation - Tech_Stack:
     description: The collection of software and platforms used by the organization.
@@ -519,6 +744,24 @@ entities:
         First_Year_Annual_Cost: 96
         Status: "Up & Running"
         Tool_Category: "Knowledge Management"
+      - Tool_Name: "Slack"
+        Strategic_Purpose: "Team communication."
+        Plan_Edition: "Pro"
+        Seats_Licenses: 15
+        Billing_Cycle: "Monthly"
+        Cost_per_Unit_Month: 6.67
+        First_Year_Annual_Cost: 120
+        Status: "Up & Running"
+        Tool_Category: "Core Productivity & AI"
+      - Tool_Name: "Slack"
+        Strategic_Purpose: "Team communication."
+        Plan_Edition: "Pro"
+        Seats_Licenses: 15
+        Billing_Cycle: "Monthly"
+        Cost_per_Unit_Month: 6.67
+        First_Year_Annual_Cost: 120
+        Status: "Up & Running"
+        Tool_Category: "Core Productivity & AI"
 
   Learning Targets - Benchmarks:
     description: Organizations identified for competitive analysis or as sources of inspiration.
@@ -550,6 +793,18 @@ entities:
         Category: "Inspirational Benchmark"
         Sub_Category: "Knowledge Management"
         Rationale_for_Inclusion: "Flexible database platform for teams."
+      - Company_Service_Name: "Workday"
+        Website_URL: "https://workday.com"
+        Logo_URL: "https://logo.clearbit.com/workday.com"
+        Category: "Direct Competitor"
+        Sub_Category: "HCM Suite"
+        Rationale_for_Inclusion: "Comprehensive HR platform."
+      - Company_Service_Name: "Workday"
+        Website_URL: "https://workday.com"
+        Logo_URL: "https://logo.clearbit.com/workday.com"
+        Category: "Direct Competitor"
+        Sub_Category: "HCM Suite"
+        Rationale_for_Inclusion: "Comprehensive HR platform."
 
 relationships:
   - { from: Active Branches - Workstreams, to: Organisational DNA - Value_Rules, type: many-to-many, description: "Shows which value rules guide the work." }

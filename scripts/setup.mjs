@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import fs from "fs";
 import path from "path";
 import yaml from "js-yaml";
@@ -27,12 +28,8 @@ function mapPropertyToNotionFormat(propName, propDef) {
     case "select":
       return { select: { options: options?.map((name) => ({ name })) || [] } };
     case "status":
-      // Status properties must have at least one option.
-      if (!options || options.length === 0) {
-        console.warn(`⚠️  Property '${propName}' of type 'status' has no options. Skipping.`);
-        return null;
-      }
-      return { status: { options: options.map((name) => ({ name })) } };
+      // Notion manages status options internally; do not send options.
+      return { status: {} };
     case "multi_select":
       return { multi_select: { options: options?.map((name) => ({ name })) || [] } };
     case "date":
@@ -53,6 +50,10 @@ function mapPropertyToNotionFormat(propName, propDef) {
       return { formula: { expression: formula } };
     case "last_edited_time":
       return { last_edited_time: {} };
+    case "created_time":
+      return { created_time: {} };
+    case "created_by":
+      return { created_by: {} };
     case "relation":
       // Relations are handled in a second pass after all DBs are created.
       RELATIONS_TO_CREATE.push({
@@ -89,23 +90,55 @@ async function setup() {
     process.exit(1);
   }
 
+
+  // Load existing database IDs if present
+  let dbIds = {};
+  if (fs.existsSync(DB_IDS_FILE_PATH)) {
+    try {
+      dbIds = JSON.parse(fs.readFileSync(DB_IDS_FILE_PATH, "utf8"));
+    } catch (e) {
+      console.warn("⚠️  Could not parse notion-ids.json, will ignore.");
+    }
+  }
+
   const createdDatabases = {};
   const entities = Object.entries(spec.entities);
 
-  // 3. First Pass: Create all databases without relations
+  // 3. First Pass: Create or update all databases without relations
   // SAFETY: This script never deletes or overwrites existing Notion databases or pages.
   // Only creation and property updates are allowed. No destructive actions are performed.
-  console.log("\n PHASE 1: Creating databases...");
+  console.log("\n PHASE 1: Creating or updating databases...");
   for (const [entityName, entityDef] of entities) {
-    console.log(`  - Creating database: ${entityName}...`);
+    console.log(`  - Processing database: ${entityName}...`);
     RELATIONS_TO_CREATE.length = 0; // Clear relations for this entity
 
-    const properties = {};
+    // Collect all properties, including relations if possible
+    // For creation: include title property. For update: skip title property.
+    const propertiesForCreate = {};
+    const propertiesForUpdate = {};
     for (const [propName, propDef] of Object.entries(entityDef.properties)) {
       try {
+        // For relation properties, if the target DB already exists, add the relation now
+        if (propDef.type === 'relation' && propDef.target_entity) {
+          const targetDbId = dbIds[propDef.target_entity];
+          if (targetDbId) {
+            propertiesForCreate[propName] = { relation: { database_id: targetDbId } };
+            propertiesForUpdate[propName] = { relation: { database_id: targetDbId } };
+            continue;
+          } else {
+            console.warn(`⚠️  Skipping relation property '${propName}' in '${entityName}' because target database '${propDef.target_entity}' not found in notion-ids.json.`);
+            continue;
+          }
+        }
         const notionProp = mapPropertyToNotionFormat(propName, propDef);
         if (notionProp) {
-          properties[propName] = notionProp;
+          if (propDef.type === 'title') {
+            propertiesForCreate[propName] = notionProp;
+            // Do not add to propertiesForUpdate
+          } else {
+            propertiesForCreate[propName] = notionProp;
+            propertiesForUpdate[propName] = notionProp;
+          }
         }
       } catch (error) {
         console.error(`❌ ${error.message}`);
@@ -113,21 +146,38 @@ async function setup() {
       }
     }
 
-    try {
-      // SAFETY: Do not delete or overwrite existing databases. Only create if not present.
-      const response = await notion.databases.create({
-        parent: { page_id: PARENT_PAGE_ID },
-        title: [{ type: "text", text: { content: entityName } }],
-        properties,
-      });
-      createdDatabases[entityName] = {
-        id: response.id,
-        relations: [...RELATIONS_TO_CREATE], // Store relations to be created for this DB
-      };
-      console.log(`    ✅ Success! (ID: ${response.id})`);
-    } catch (error) {
-      console.error(`❌ Failed to create database '${entityName}':`, error.body || error.message);
-      process.exit(1);
+    const dbId = dbIds[entityName];
+    if (dbId) {
+      try {
+        await notion.databases.update({
+          database_id: dbId,
+          properties: propertiesForUpdate,
+        });
+        createdDatabases[entityName] = {
+          id: dbId,
+          relations: [...RELATIONS_TO_CREATE],
+        };
+        console.log(`    ✅ Updated existing database (ID: ${dbId})`);
+      } catch (error) {
+        console.error(`❌ Failed to update database '${entityName}':`, error.body || error.message);
+        process.exit(1);
+      }
+    } else {
+      try {
+        const response = await notion.databases.create({
+          parent: { page_id: PARENT_PAGE_ID },
+          title: [{ type: "text", text: { content: entityName } }],
+          properties: propertiesForCreate,
+        });
+        createdDatabases[entityName] = {
+          id: response.id,
+          relations: [...RELATIONS_TO_CREATE],
+        };
+        console.log(`    ✅ Created new database (ID: ${response.id})`);
+      } catch (error) {
+        console.error(`❌ Failed to create database '${entityName}':`, error.body || error.message);
+        process.exit(1);
+      }
     }
   }
 
