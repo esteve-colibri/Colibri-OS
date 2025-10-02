@@ -18,11 +18,23 @@
   "author": "Your Name",
   "license": "ISC",
   "dependencies": {
-    "@notionhq/client": "^2.2.14",
+    "@notionhq/client": "^2.3.0",
     "dotenv": "^16.4.5",
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "notion-to-md": "^3.1.9"
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/esteve-colibri/Colibri-OS.git"
+  },
+  "bugs": {
+    "url": "https://github.com/esteve-colibri/Colibri-OS/issues"
+  },
+  "homepage": "https://github.com/esteve-colibri/Colibri-OS#readme"
 }
